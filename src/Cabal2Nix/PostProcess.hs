@@ -9,7 +9,7 @@ import Distribution.Text ( display )
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
   | pname == "aeson" && version > Version [0,7] []
-                                = deriv { buildDepends = "blazeBuilder":buildDepends }
+                                = deriv { buildDepends = "blaze-builder":buildDepends }
   | pname == "Agda"             = deriv { buildTools = "emacs":buildTools, phaseOverrides = agdaPostInstall }
   | pname == "alex" && version < Version [3,1] []
                                 = deriv { buildTools = "perl":buildTools }
@@ -17,19 +17,15 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { buildTools = "perl":"happy":buildTools }
   | pname == "bindings-GLFW"    = deriv { extraLibs = "libXext":"libXfixes":extraLibs }
   | pname == "bits-extras"      = deriv { configureFlags = "--ghc-option=-lgcc_s":configureFlags, extraLibs = filter (/= "gcc_s") extraLibs }
-  | pname == "cabal2nix"        = deriv { doCheck = True, phaseOverrides = cabal2nixDoCheckHook }
   | pname == "cabal-bounds"      = deriv { buildTools = "cabalInstall":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
-  | pname == "cookie"           = deriv { phaseOverrides = cookieDoCheckHook }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"stdenv.cc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
-  | pname == "doctest"          = deriv { runHaddock = True, phaseOverrides = doctestNoHaddock }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
-  | pname == "either"           = deriv { runHaddock = True, phaseOverrides = eitherNoHaddock }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version, buildTools = "emacs":"makeWrapper":buildTools }
   | pname == "ghc-parser"       = deriv { buildTools = "cpphs":"happy":buildTools, phaseOverrides = ghcParserPatchPhase }
@@ -62,9 +58,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hmatrix-special"  = deriv { extraLibs = "gsl":extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
-  | pname == "hsyslog"          = deriv { phaseOverrides = hsyslogNoHaddock }
-  | pname == "HTTP" && version >= Version [4000,2,14] []
-                                = deriv { runHaddock = True, phaseOverrides = httpNoHaddock }
   | pname == "GlomeVec"         = deriv { buildTools = "llvm":buildTools }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
@@ -76,7 +69,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "MFlow"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "markdown-unlit"   = deriv { runHaddock = True, phaseOverrides = markdownUnlitNoHaddock }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "mime-mail"        = deriv { extraFunctionArgs = ["sendmail ? \"sendmail\""], phaseOverrides = mimeMailConfigureFlags }
   | pname == "mysql"            = deriv { buildTools = "mysqlConfig":buildTools, extraLibs = "zlib":extraLibs }
@@ -90,8 +82,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
   | pname == "poppler"          = deriv { extraLibs = "libc":extraLibs }
   | pname == "purescript"       = deriv { testDepends = "nodejs":testDepends }
-  | pname == "QuickCheck" && version >= Version [2,7,3] []
-                                = deriv { runHaddock = True, phaseOverrides = quickCheckNoHaddock }
   | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
   | pname == "saltine"          = deriv { extraLibs = map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
@@ -99,18 +89,11 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
   | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
-  | pname == "split" && version == Version [0,2,2] []
-                                = deriv { doCheck = True, phaseOverrides = splitDoCheck }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
-  | pname == "syb" && version == Version [0,4,2] []
-                                = deriv { doCheck = True, phaseOverrides = sybDoCheck }
-  | pname == "tar"              = deriv { runHaddock = True, phaseOverrides = tarNoHaddock }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "transformers" && version >= Version [0,4,1] []
-                                = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "vector"           = deriv { configureFlags = "${stdenv.lib.optionalString stdenv.isi686 \"--ghc-options=-msse2\"}":configureFlags }
@@ -123,18 +106,14 @@ postProcess deriv@(MkDerivation {..})
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
                                         }
   | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
-  | pname == "yi"               = deriv { runHaddock = True, phaseOverrides = yiFixHaddock }
   | otherwise                   = deriv
 
 cudaConfigurePhase :: String
 cudaConfigurePhase = unlines
-  [ "# Perhaps this should be the default in cabal.nix ..."
-  , "#"
-  , "# The cudatoolkit provides both 64 and 32-bit versions of the"
+  [ "# The cudatoolkit provides both 64 and 32-bit versions of the"
   , "# library. GHC's linker fails if the wrong version is found first."
   , "# We solve this by eliminating lib64 from the path on 32-bit"
   , "# platforms and putting lib64 first on 64-bit platforms."
-  , "libPaths = if stdenv.is64bit then \"lib64 lib\" else \"lib\";"
   , "configurePhase = ''"
   , "  for i in Setup.hs Setup.lhs; do"
   , "    test -f $i && ghc --make $i"
@@ -143,7 +122,7 @@ cudaConfigurePhase = unlines
   , "    if [ -d \"$p/include\" ]; then"
   , "      extraLibDirs=\"$extraLibDirs --extra-include-dir=$p/include\""
   , "    fi"
-  , "    for d in $libPaths; do"
+  , "    for d in ${if stdenv.is64bit then \"lib64 lib\" else \"lib\"}; do"
   , "      if [ -d \"$p/$d\" ]; then"
   , "        extraLibDirs=\"$extraLibDirs --extra-lib-dir=$p/$d\""
   , "      fi"
@@ -163,10 +142,6 @@ ghcModPostInstall pname version = unlines
   , "  cd .."
   , "  ensureDir \"$out/share/emacs\""
   , "  mv $pname-$version emacs/site-lisp"
-  , "  wrapProgram $out/bin/ghc-mod --add-flags \\"
-  , "    \"\\$(${ghc.GHCGetPackages} ${ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
-  , "  wrapProgram $out/bin/ghc-modi --add-flags \\"
-  , "    \"\\$(${ghc.GHCGetPackages} ${ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
   , "'';"
   ]
 
@@ -212,9 +187,6 @@ xmonadPostInstall = unlines
   , "];"
   ]
 
-yiFixHaddock :: String
-yiFixHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"7.8\";"
-
 gitAnnexOverrides :: String
 gitAnnexOverrides = unlines
   [ "preConfigure = \"export HOME=$TEMPDIR\";"
@@ -256,26 +228,6 @@ lhs2texPostInstall = unlines
 ncursesPatchPhase :: String
 ncursesPatchPhase = "patchPhase = \"find . -type f -exec sed -i -e 's|ncursesw/||' {} \\\\;\";"
 
-doctestNoHaddock, markdownUnlitNoHaddock :: String
-markdownUnlitNoHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"7.4\";"
-doctestNoHaddock = markdownUnlitNoHaddock
-
-cabal2nixDoCheckHook :: String
-cabal2nixDoCheckHook = "doCheck = stdenv.lib.versionOlder \"7.8\" ghc.version;"
-
-cookieDoCheckHook :: String
-cookieDoCheckHook = "doCheck = stdenv.lib.versionOlder \"7.8\" ghc.version;"
-
-eitherNoHaddock :: String
-eitherNoHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"7.6\";"
-
-httpNoHaddock, quickCheckNoHaddock, tarNoHaddock, transformersNoHaddock, hsyslogNoHaddock :: String
-httpNoHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"6.11\";"
-quickCheckNoHaddock = httpNoHaddock
-tarNoHaddock = httpNoHaddock
-transformersNoHaddock = httpNoHaddock
-hsyslogNoHaddock = httpNoHaddock
-
 agdaPostInstall :: String
 agdaPostInstall = unlines
   [ "postInstall = ''"
@@ -305,10 +257,6 @@ mimeMailConfigureFlags :: String
 mimeMailConfigureFlags = unlines
   [ "configureFlags = \"--ghc-option=-DMIME_MAIL_SENDMAIL_PATH=\\\"${sendmail}\\\"\";"
   ]
-
-sybDoCheck, splitDoCheck :: String
-sybDoCheck = "doCheck = stdenv.lib.versionOlder ghc.version \"7.9\";"
-splitDoCheck = sybDoCheck
 
 haddockPreCheck :: String
 haddockPreCheck = "preCheck = \"unset GHC_PACKAGE_PATH\";"
