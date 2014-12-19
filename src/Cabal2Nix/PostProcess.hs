@@ -18,7 +18,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "apache-md5"       = deriv { testDepends = delete "crypto" testDepends }
   | pname == "bindings-GLFW"    = deriv { extraLibs = "libXext":"libXfixes":extraLibs }
   | pname == "bits-extras"      = deriv { configureFlags = "--ghc-option=-lgcc_s":configureFlags, extraLibs = filter (/= "gcc_s") extraLibs }
-  | pname == "cabal-bounds"      = deriv { buildTools = "cabalInstall":buildTools }
+  | pname == "cabal-bounds"      = deriv { buildTools = "cabal-install":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
